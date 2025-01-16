@@ -7,6 +7,7 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 import {Minter} from "../src/Minter.sol";
+import {Errors} from "@sablier/v2-core/src/libraries/Errors.sol";
 
 contract MinterForkTest is BaseTest {
     using SafeERC20 for IERC20;
@@ -87,6 +88,19 @@ contract MinterForkTest is BaseTest {
         vm.stopPrank();
     }
 
+    function test_RevertWhen_PhaseHasNotEnded() public {
+        usersMint();
+
+        // Attempt to lock when claiming phase hasn't ended
+        vm.startPrank(signer);
+        vm.deal(signer, 100_000 ether);
+
+        vm.expectRevert("INSOMNIA: Minting processes still active");
+        minter.toSablier();
+
+        vm.stopPrank();
+    }
+
     function test_SuccesfulWithdrawFromSablier() public {
         usersMint();
 
@@ -111,5 +125,25 @@ contract MinterForkTest is BaseTest {
         vm.stopPrank();
     }
 
-    // function
+    function test_RevertWhen_WithdrawBeforeTheEndOfCliff() public {
+        usersMint();
+
+        // Lock the miniting fee in a linear vesting schedule
+        vm.startPrank(signer);
+
+        vm.deal(signer, 100_000 ether);
+
+        minter.setPhase(Minter.Phase.END);
+        uint256 _streamId = minter.toSablier();
+
+        // Withdraw from Sablier
+        vm.warp(block.timestamp + 24 weeks);
+
+        uint128 withdrawableAmount = SABLIER.withdrawableAmountOf(_streamId);
+
+        vm.expectRevert(abi.encodeWithSelector(Errors.SablierV2Lockup_WithdrawAmountZero.selector, _streamId));
+        SABLIER.withdraw(_streamId, signer, withdrawableAmount);
+
+        vm.stopPrank();
+    }
 }
