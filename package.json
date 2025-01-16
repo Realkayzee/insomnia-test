@@ -1,0 +1,17 @@
+{
+  "scripts": {
+    "generate": "ts-node script/ts/generators/merkle.ts",
+    "build:scripts": "tsc"
+  },
+  "dependencies": {
+    "csv-parser": "^3.1.0",
+    "merkletreejs": "^0.4.1",
+    "path": "^0.12.7",
+    "viem": "^2.22.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0"
+  }
+}

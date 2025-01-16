@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
+    "lib": ["ES2020"],
+
+    // Type Checking
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+
+    // Paths
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["script/ts/*"]
+    },
+
+    // Output
+    "outDir": "dist",
+    "sourceMap": true,
+    "declaration": true,
+
+    // Interop
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "checkJs": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+
+    // Project References
+    "composite": true,
+    "declarationMap": true
+  },
+  "include": ["script/ts/**/*"],
+  "exclude": ["node_modules", "dist", "test", "src", "lib"]
+}
